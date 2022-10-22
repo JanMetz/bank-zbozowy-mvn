@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="" lang=""><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Ciągła integracja – Ant, Maven, GitHub Actions</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 0;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <style>
+
+  html {
+      background-color: white;
+  }
+
+  h2 {
+      font-size: 1.4em;
+  }
+
+  pre>code, .sourceCode {
+      background-color: #fafafa;
+      display: block;
+      line-height: 1.8;
+      font-size: 14px;
+      padding: 4px;
+  }
+
+  :not(pre)>code {
+      background: #f5f5f5;
+      color: #2c3e50;
+      padding: 1px 6px;
+      border-radius: 3px;
+  }
+
+  blockquote {
+      margin: 0;
+      border-left: 8px solid #8885;
+      color: black;
+      padding: 10px 0 10px 15px;
+      background-color: rgba(156,163,175, 0.15);
+  }
+
+  blockquote p {
+      margin: 0;
+  }
+
+  </style>
+</head>
+<body>
+<div style="text-align: right; position: absolute; top: 0px; right: 0px">
+  <a href="" target="_blank">
+    <img src="Ci%C4%85g%C5%82a%20integracja%20%E2%80%93%20Ant,%20Maven,%20GitHub%20Actions_pliki/external-link.svg" title="Otwórz w nowej karcie">
+  </a>
+</div>
+<header id="title-block-header">
+<h1 class="title">Ciągła integracja – Ant, Maven, GitHub Actions</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Spis treści</h2>
+<ul>
+<li><a href="#ant">Ant</a>
+<ul>
+<li><a href="#zadanie-1.-zależności-między-celami">Zadanie 1. Zależności między celami</a></li>
+<li><a href="#zadanie-2.-budowanie-projektu-bank-zbożowy">Zadanie 2. Budowanie projektu Bank Zbożowy</a></li>
+</ul></li>
+<li><a href="#maven">Maven</a>
+<ul>
+<li><a href="#zadanie-3.-utworzenie-projektu-zgodnie-z-konwencją">Zadanie 3. Utworzenie projektu zgodnie z konwencją</a></li>
+<li><a href="#zadanie-4.-dodanie-zależności-podczas-kompilacji">Zadanie 4. Dodanie zależności podczas kompilacji</a></li>
+<li><a href="#zadanie-5.-uruchamianie-testów">Zadanie 5. Uruchamianie testów</a></li>
+<li><a href="#zadanie-6.-generowanie-javadoc">Zadanie 6. Generowanie javadoc</a></li>
+<li><a href="#zadanie-7.-uruchomienia-aplikacji">Zadanie 7. Uruchomienia aplikacji</a></li>
+</ul></li>
+<li><a href="#githhub-actions">GithHub Actions</a>
+<ul>
+<li><a href="#zadanie-8.-utworzenie-repozytorium-na-githubie">Zadanie 8. Utworzenie repozytorium na GitHubie</a></li>
+<li><a href="#zadanie-9.-uruchomienie-usługi-github-actions">Zadanie 9. Uruchomienie usługi GitHub Actions</a></li>
+<li><a href="#zadanie-10.-automatyczne-budowanie-po-zmianie-kodu">Zadanie 10. Automatyczne budowanie po zmianie kodu</a></li>
+</ul></li>
+</ul>
+</nav>
+<p>Celem zajęć jest poznanie narzędzi do zarządzania konfiguracją, a w 
+szczególności, narzędzi związanych z budowaniem oprogramowania. W ramach
+ ćwiczeń dowiesz się jak zbudować przykładowy projekt korzystając z <strong>Apache Ant</strong> (podejście proceduralne) oraz <strong>Apache Maven</strong>
+ (podejście deklaratywne, bazujące na konwencjach). Następnie 
+skonfigurujesz ciągłą integrację w ten sposób aby przykładowy projekt 
+umieszczony na <strong>GitHubie</strong> był automatycznie budowany po dokonaniu dowolnych zmian w kodzie.</p>
+<h1 id="ant">Ant</h1>
+<p>Apache Ant to narzędzie, które służy do automatyzowania procesu budowy oprogramowania. W tym celu, w specjalnym pliku <em>build.xml</em> definiuje się cele (ang. <em>target</em>), z których każdy jest spełniany poprzez wykonywanie serii zadań (ang. <em>task</em>).
+ Siła narzędzia polega na dużej bibliotece standardowych zadań, z 
+których można korzystać podczas definiowania własnych celów. Możliwe 
+jest też tworzenie własnych zadań. Podczas zajęć warto skorzystać z <a href="http://ant.apache.org/manual/index.html">dokumentacji narzędzia Ant</a>.</p>
+<p>W trakcie kolejnych dwóch zadań Twoim celem będzie zautomatyzowanie procesu budowy projektu <em>Bank Zbożowy</em> – prostej strony internetowej symulującej działanie bankomatu.</p>
+<h2 id="zadanie-1.-zależności-między-celami">Zadanie 1. Zależności między celami</h2>
+<p>W ramach tego zadania stworzysz pierwszą wersję pliku <em>build.xml</em>,
+ w której będą zdefiniowane cele służące do budowania projektu Bank 
+Zbożowy. Dodatkowo określisz zależności pomiędzy tymi celami.</p>
+<ol type="1">
+<li>Pobierz z Moodle’a archiwum z plikami do zajęć</li>
+<li>Rozpakuj pobrany plik <em>CI.zip</em> w folderze, do którego 
+będziesz miał wygodny dostęp (najlepiej użyj 7-zipa z menu 
+kontekstowego, standardowy mechanizm Windows rozpakowywania jest 
+kilkakrotnie wolniejszy niż 7-zip)</li>
+</ol>
+<p>W archiwum znajdują się dwa podfoldery: <em>Ant</em>, <em>Maven</em>. Wszystkie pliki potrzebne do dwóch pierwszych zadań zostały umieszczone w folderze <em>Ant</em>. Wewnątrz tego folderu znajdziesz podfolder z kodem projektu Bank Zbożowy oraz początkową wersję pliku <em>sample_build.xml</em>, która zawiera wstępnie zdefiniowane cele budowania. budowania.</p>
+<ol type="1" start="3">
+<li>Przekopiuj plik <em>sample_build.xml</em> do folderu <em>bank-zbozowy</em> i przemianuj go na <em>build.xml</em></li>
+<li>Otwórz skopiowany plik <em>build.xml</em> i przeanalizuj jego treść</li>
+</ol>
+<p>Każdy z celów wyświetla na ekranie (przy użyciu polecenia <code>echo</code>) swoją opisową nazwę, wymienia kroki, które wykonuje oraz podaje inne cele, od których zależy.</p>
+<ol type="1" start="5">
+<li>Uruchom terminal</li>
+<li>Przejdź do folderu <em>bank-zbozowy</em></li>
+<li>Wpisz polecenie <code>ant</code></li>
+</ol>
+<p>Program ant uruchomi się, ale żaden cel nie zostanie wykonany.</p>
+<p>Spróbuj uruchomić jakiś konkretny cel, np. <code>compile</code> – wpisz polecenie <code>ant compile</code>. Aby sprawdzić, jakie cele są dostępne w danym projekcie, użyj polecenia <code>ant -p</code>.</p>
+<ol type="1" start="8">
+<li>Zdefiniuj zależności pomiędzy celami, używając atrybutu <code>depends</code>. Są one opisane w pliku <em>build.xml</em>
+ na końcu każdego celu. Dla każdego celu powinieneś określić cele od 
+jakich on zależy (https://ant.apache.org/manual/targets.html).</li>
+<li>Oznacz cel <code>compile</code> jako domyślny, używając atrybutu <code>default</code> w elemencie <code>project</code> (https://ant.apache.org/manual/using.html#projects)</li>
+</ol>
+<p>Przetestuj czy rzeczywiście domyślny cel uruchamia się, kiedy nie podamy żadnego argumentu przy uruchomieniu polecenia <code>ant</code>.</p>
+<h2 id="zadanie-2.-budowanie-projektu-bank-zbożowy">Zadanie 2. Budowanie projektu Bank Zbożowy</h2>
+<p>A teraz pora na coś trudniejszego. Celem tego zadania jest dodanie 
+odpowiednich kroków do konkretnych celów, w taki sposób by projekt Bank 
+Zbożowy rzeczywiście się kompilował i uruchamiał. Aby nie tracić czasu 
+na przeszukiwanie dokumentacji, poniżej wymienione zostały zadania Anta,
+ które będą przydatne:</p>
+<ul>
+<li><p>tworzenie folderu</p>
+<pre><code>  &lt;mkdir dir="nowy-folder"/&gt;</code></pre></li>
+<li><p>usuwanie folderu</p>
+<pre><code>  &lt;delete dir="folder-do-usuniecia"/&gt;</code></pre></li>
+<li><p>kopiowanie folderu</p>
+<pre><code>  &lt;copy todir="folder-docelowy"&gt;
+    &lt;fileset dir="folder-do-skopiowania"/&gt;
+  &lt;/copy&gt;</code></pre></li>
+</ul>
+<p>Spróbujmy rozpocząć od kilku najprostszych celów:</p>
+<ol type="1">
+<li>Dodaj kroki do celów <code>init</code>, <code>copy</code>, <code>clean</code> oraz <code>clean-all</code> w miejsce zadań <code>echo</code></li>
+<li>Przetestuj wszystkie cztery cele czy na pewno działają zgodnie z planem</li>
+</ol>
+<hr>
+<p>Pora na kompilację kodu źródłowego i tworzenie pliku jar:</p>
+<ul>
+<li><p>kompilacja kodu źródłowego</p>
+<pre><code>  &lt;javac srcdir="folder-zrodlowy" destdir="folder-docelowy"
+        includeantruntime="false" encoding="utf-8" /&gt;</code></pre></li>
+<li><p>tworzenie pliku jar</p>
+<pre><code>  &lt;jar destfile="docelowy-plik.jar"&gt;
+    &lt;fileset dir="folder-z-binariami"/&gt;
+  &lt;/jar&gt;</code></pre></li>
+</ul>
+<p>Teraz jesteś gotów do implementacji kolejnych zadań:</p>
+<ol type="1" start="3">
+<li>Dodaj krok do celu <code>compile</code>. Pamiętaj aby wskazać folder <em>src</em> jako kod źródłowy i <em>bin</em> jako folder, do którego mają zostać skopiowane pliki binarne.</li>
+<li>Dodaj krok do celu <code>dist</code>. Ten cel ma zadanie utworzenie w folderze <em>dist</em> pliku <em>bank.jar</em>, do którego spakowane zostaną pliki binarne z folderu <em>bin</em>.</li>
+<li>Przetestuj działanie obu celów</li>
+</ol>
+<p>Cel kompilacji nie powinien się powieść. Jak się pewnie domyślasz, 
+przyczyną tego problemu jest brak bibliotek, z których korzysta kod 
+źródłowych, takich jak <em>Freemarker</em> czy <em>Jetty</em>. Musisz 
+wskazać kompilatorowi jakie biblioteki są potrzebne by mógł skompilować 
+kod. Warto tutaj wspomnieć o tym, że część bibliotek znajduje się w 
+folderze <em>lib</em> (są stosunkowo małe i potrzebne niezależnie od tego w jaki sposób będziemy uruchamiać aplikację), a druga część w folderze <em>Jetty</em>,
+ a więc znajdują się poza folderem projektu (nie chcemy ich trzymać w 
+repozytorium, bo jest ich dużo, a poza tym naszą aplikację można 
+uruchomić korzystając nie tylko z tego serwera aplikacji).</p>
+<p>Oto kilka sposobów na definiowanie ścieżek do plików pokazanych w ramach jednego przykładu:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">path</span><span class="ot"> id=</span><span class="st">"identyfikator-sciezki"</span>&gt;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">fileset</span><span class="ot"> dir=</span><span class="st">"folder-z-plikami"</span>/&gt;</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">pathelement</span><span class="ot"> location=</span><span class="st">"konkretny-plik"</span>/&gt;</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">path</span><span class="ot"> refid=</span><span class="st">"identyfikator-istniejacej-sciezki"</span>/&gt;</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">path</span>&gt;</span></code></pre></div>
+<p>Powyższy kod pokazuje trzy sposoby na określenie elementów 
+znajdujących się w konkretnej ścieżce do plików: (1) dołączenie 
+wszystkich plików z folderu, (2) podanie konkretnych plików (jeden 
+element <code>pathelement</code> na jeden plik), (3) podanie identyfikatora do innej istniejącej już ścieżki (innego elementu <code>path</code>). Ścieżki najlepiej dodawać na początku pliku <em>build.xml</em> (ale jeszcze wewnątrz elementu project).</p>
+<p>Naszym celem jest wskazanie kompilatorowi ścieżek nie tylko do kodu źródłowego, ale także do wymaganych bibliotek.</p>
+<ol type="1" start="6">
+<li>Dodaj ścieżkę <code>jetty.cp</code> (id), która będzie wskazywać na folder <em>Jetty</em></li>
+<li>Dodaj ścieżkę <code>lib.cp</code>, która będzie wskazywać na biblioteki <em>Freemarker</em> oraz <em>Servlet-Api</em>, które znajdują się w folderze <em>lib</em> oraz na ścieżkę <code>jetty.cp</code></li>
+<li>Dodaj atrybut <code>classpathref</code> do zadania <code>javac</code> tak by wskazywał na ścieżkę <code>lib.cp</code></li>
+<li>Sprawdź działanie celów <code>compile</code> i <code>dist</code></li>
+</ol>
+<p>(Zwróć uwagę czy nazwa biblioteki Freemarker jest zapisana poprawnie.
+ Wielu studentów wpisuje Freemaker, a więc bez jednej literki “r”).</p>
+<p>Tym razem kompilacja powinna się powieść. Brawo!</p>
+<hr>
+<p>Pozostaje jeszcze jedno zadanie – uruchomienie aplikacji.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">java</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  classname=</span><span class="st">"nazwa-klasy-do-uruchomienia"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ot">  classpathref=</span><span class="st">"referencja-do-sciezki"</span> /&gt;</span></code></pre></div>
+<p>Pamiętaj aby dodać do ścieżki <code>classpath</code> nie tylko biblioteki, ale także plik <em>jar</em>, który ma być uruchomiony.</p>
+<ol type="1" start="10">
+<li>Dodaj ścieżkę <code>dist.cp</code>, która będzie wskazywać ścieżkę <code>lib.cp</code> oraz ścieżkę do pliku <em>bank.jar</em></li>
+<li>Dodaj zadanie <code>java</code> do celu <code>run</code>, które uruchomi klasę <code>put.io.selenium.atm.SimpleServer</code></li>
+</ol>
+<p>Jeśli wszystko poszło ok to serwer aplikacji uruchomi stronę Banku Zbożowego. Uruchom przeglądarkę i przejdź do adresu: <a href="http://localhost:9090/">http://localhost:9090</a>. Możesz nawet spróbować wypłacić trochę gotówki – prawidłowy kod pin znajdziesz w źródłach projektu.</p>
+<p>Brawo! Udało Ci się ustawić cały proces budowania kodu dla całkiem skomplikowanego projektu 🙂</p>
+<h1 id="maven">Maven</h1>
+<p>Narzędzie Apache Maven działa w myśl zasady <em>„convention over configuration</em>”,
+ czyli organizacji wszystkich projektów w określony (taki sam) sposób. 
+Dzięki takiemu podejściu proces budowania staje się deklaratywny – 
+mówimy co chcemy osiągnąć, a narzędzie wie jak to zrobić (np. dzięki 
+zachowaniu konwencji narzędzie jest w stanie określić w jakich 
+katalogach znajduje się kod źródłowy). Więcej na temat narzędzia Maven w
+ materiałach wykładowych oraz w <a href="https://maven.apache.org/guides/index.html">dokumentacji</a>.</p>
+<p>W trakcie kolejnych zadań będziesz automatyzował proces budowania 
+projektu Bank Zbożowy. Punktem wyjścia będą wszystkie pliki znajdujące 
+się w folderze Maven.</p>
+<h2 id="zadanie-3.-utworzenie-projektu-zgodnie-z-konwencją">Zadanie 3. Utworzenie projektu zgodnie z konwencją</h2>
+<p>Projekt, którego pliki znajdują się w folderze <em>bank-zbozowy</em> nie jest zgodny z konwencją Mavena. Poniżej znajduje się mapowanie istniejącej struktury plików na przyjętą w konwencji:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Istniejąca struktura</th>
+<th>Maven</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>src/**.*</td>
+<td>src/main/java/**.*</td>
+</tr>
+<tr class="even">
+<td>test/**.*</td>
+<td>src/test/java/**.*</td>
+</tr>
+<tr class="odd">
+<td>res/**.*</td>
+<td>src/main/resources/**.*</td>
+</tr>
+<tr class="even">
+<td>web.xml</td>
+<td>src/main/webapp/WEB-INF/web.xml</td>
+</tr>
+</tbody>
+</table>
+<p>Twoim zadaniem będzie stworzenie projektu <em>bank-zbozowy-mvn</em>, w
+ taki sposób by wykorzystywał strukturę zgodną z konwencją Maven. Przy 
+kopiowaniu klas Java pamiętaj aby znajdowały się one w folderach 
+odpowiadających członom pakietów, w których są zdefiniowane. Innymi 
+słowy kopiuj nie tylko pliki Java, ale także strukturę podfolderów, np. <em>put/io/selenium/atm</em>.</p>
+<ol type="1">
+<li>Stwórz projekt <em>bank-zbozowy-mvn</em> w folderze <em>Maven</em>, wraz z odpowiednimi podfolderami</li>
+<li>Przekopiuj pliki projektu <em>bank-zbozowy</em> z folderu <em>Maven</em> do folderu <em>bank-zbozowy-mvn</em> (zgodnie z tabelką)</li>
+<li>Przekopiuj plik <em>sample_pom.xml</em> z folderu <em>Maven</em> do folderu <em>bank-zbozowy-mvn</em> i przemianuj go na <em>pom.xml</em></li>
+<li>Uruchom terminal</li>
+<li>Przejdź w konsoli do folderu <em>bank-zbozowy-mvn</em></li>
+<li>Spróbuj wywołać polecenie <code>mvn compile</code></li>
+</ol>
+<p>Na tym etapie projekt się nie powinien kompilować. Jaki jest tego powód? Pewnie znów się domyślasz – brakujące zależności.</p>
+<h2 id="zadanie-4.-dodanie-zależności-podczas-kompilacji">Zadanie 4. Dodanie zależności podczas kompilacji</h2>
+<p>Nasz projekt zależy od bibliotek Freemarker oraz JavaServlet API 2.5.
+ Musimy przekazać tę informację Mavenowi (w materiałach wykładowych 
+znajduje się sposób definiowania zależności):</p>
+<pre><code>- Freemarker
+    - groupId: freemarker
+    - artifactId: freemarker
+    - version: dowolna wcześniejsza od 2.3.1 włącznie
+- Servlet API 2.5
+    - groupId: javax.servlet
+    - artifactId: servlet-api
+    - version: 2.5 (tylko i wyłącznie)
+    - scope: provided</code></pre>
+<p>Informacje o zakresach wersji można znaleźć <a href="https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html">tutaj</a>.</p>
+<ol type="1">
+<li>Dodaj zależności do potrzebnych bibliotek do pliku <em>pom.xml</em></li>
+<li>Wykonaj polecenie <code>mvn compile</code></li>
+</ol>
+<p>Czy proces kompilacji zakończył się pomyślnie? Tym razem projekt powinien się zbudować.</p>
+<ol type="1" start="3">
+<li>Przeanalizuj folder <em>target</em>.</li>
+</ol>
+<h2 id="zadanie-5.-uruchamianie-testów">Zadanie 5. Uruchamianie testów</h2>
+<p>Chcielibyśmy aby w trakcie procesu testowania zostały wykonane testy 
+jednostkowe. Spróbujmy uruchomić fazę testowania dla naszego projektu.</p>
+<ol type="1">
+<li>Wykonaj polecenie <code>mvn test</code></li>
+</ol>
+<p>Przeanalizuj wynik wykonania. Dlaczego testy nie zostały uruchomione?
+ Tak jak i poprzednio musimy dodać zależności do brakującej biblioteki.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">dependency</span>&gt;</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">groupId</span>&gt;junit&lt;/<span class="kw">groupId</span>&gt;</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">artifactId</span>&gt;junit&lt;/<span class="kw">artifactId</span>&gt;</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">version</span>&gt;4.12&lt;/<span class="kw">version</span>&gt;</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">scope</span>&gt;test&lt;/<span class="kw">scope</span>&gt;</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">dependency</span>&gt;</span></code></pre></div>
+<ol type="1" start="2">
+<li>Wykonaj ponownie polecenie <code>mvn test</code></li>
+</ol>
+<p>Tym razem wszystkie testy powinny się uruchomić. W oknie konsoli 
+zostały wyświetlone statystyki uruchomionych testów: 6 testów się 
+uruchomiło i żaden nie zakończył się niepowodzeniem. Spróbujmy 
+wygenerować bardziej obrazowy raport.</p>
+<ol type="1" start="3">
+<li>Dodaj konfigurację wtyczki Surefire do pliku <em>pom.xml</em></li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">reporting</span>&gt;</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">plugins</span>&gt;</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">plugin</span>&gt;</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">groupId</span>&gt;org.apache.maven.plugins&lt;/<span class="kw">groupId</span>&gt;</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">artifactId</span>&gt;maven-site-plugin&lt;/<span class="kw">artifactId</span>&gt;</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">version</span>&gt;3.3&lt;/<span class="kw">version</span>&gt;</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">plugin</span>&gt;</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">plugin</span>&gt;</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">groupId</span>&gt;org.apache.maven.plugins&lt;/<span class="kw">groupId</span>&gt;</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">artifactId</span>&gt;maven-project-info-reports-plugin&lt;/<span class="kw">artifactId</span>&gt;</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">version</span>&gt;2.7&lt;/<span class="kw">version</span>&gt;</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">plugin</span>&gt;</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">plugin</span>&gt;</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">groupId</span>&gt;org.apache.maven.plugins&lt;/<span class="kw">groupId</span>&gt;</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">artifactId</span>&gt;maven-surefire-report-plugin&lt;/<span class="kw">artifactId</span>&gt;</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">version</span>&gt;3.0.0-M5&lt;/<span class="kw">version</span>&gt;</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">plugin</span>&gt;</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">plugins</span>&gt;</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">reporting</span>&gt;</span></code></pre></div>
+<ol type="1" start="4">
+<li>Wykonaj polecenie <code>mvn site</code></li>
+<li>Znajdź i otwórz dokumentację testów jednostkowych (<em>target/site/index.html</em>, a potem <em>Project reports → Surefire report</em>)</li>
+</ol>
+<h2 id="zadanie-6.-generowanie-javadoc">Zadanie 6. Generowanie javadoc</h2>
+<p>Czy generowanie dokumentacji będzie tak samo proste do 
+skonfigurowania jak uruchamianie testów? Tak! Jedyne co jest potrzebne 
+to wtyczka do raportowania, która wygeneruje dokumentację javadoc.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">reporting</span>&gt;</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">plugins</span>&gt;</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">plugin</span>&gt;</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">groupId</span>&gt;org.apache.maven.plugins&lt;/<span class="kw">groupId</span>&gt;</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">artifactId</span>&gt;maven-javadoc-plugin&lt;/<span class="kw">artifactId</span>&gt;</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">version</span>&gt;3.1.1&lt;/<span class="kw">version</span>&gt;</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">plugin</span>&gt;</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">plugins</span>&gt;</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">reporting</span>&gt;</span></code></pre></div>
+<ol type="1">
+<li>Dodaj konfigurację wtyczki javadoc</li>
+<li>Wykonaj polecenie <code>mvn site</code></li>
+<li>Znajdź i otwórz dokumentację kodu javadoc</li>
+</ol>
+<h2 id="zadanie-7.-uruchomienia-aplikacji">Zadanie 7. Uruchomienia aplikacji</h2>
+<p>Aby uruchomić naszą aplikację potrzebujemy… kolejną wtyczkę.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode xml"><code class="sourceCode xml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">build</span>&gt;</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">plugins</span>&gt;</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">plugin</span>&gt;</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">groupId</span>&gt;org.eclipse.jetty&lt;/<span class="kw">groupId</span>&gt;</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">artifactId</span>&gt;jetty-maven-plugin&lt;/<span class="kw">artifactId</span>&gt;</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">version</span>&gt;9.4.7.v20170914&lt;/<span class="kw">version</span>&gt;</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">configuration</span>&gt;</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">contextPath</span>&gt;/&lt;/<span class="kw">contextPath</span>&gt;</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">scanIntervalSeconds</span>&gt;10&lt;/<span class="kw">scanIntervalSeconds</span>&gt;</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">httpConnector</span>&gt;</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">port</span>&gt;9091&lt;/<span class="kw">port</span>&gt;</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">httpConnector</span>&gt;</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">configuration</span>&gt;</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">plugin</span>&gt;</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">plugins</span>&gt;</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">build</span>&gt;</span></code></pre></div>
+<ol type="1">
+<li>Dodaj konfigurację wtyczki jetty. Zwróć uwagę, że tym razem jej definicja powinna się znaleźć w sekcji <em>build</em>, a nie <em>reporting</em>.</li>
+<li>Wykonaj polecenie <code>mvn jetty:run</code></li>
+</ol>
+<p>Jeśli wszystko poszło ok serwer aplikacji uruchomi stronę Banku Zbożowego. Uruchom przeglądarkę i przejdź do adresu: <a href="http://localhost:9091/">http://localhost:9091</a>. Strona banku powinna działać tak samo jak w przypadku Anta.</p>
+<p>Maven posiada kilka innych przydatnych poleceń, np. <code>mvn package</code> wygeneruje plik war, który będzie można wyeksportować na produkcyjny serwer aplikacji. Inne polecenie, <code>mvn help:effective-pom</code>
+ wyświetla faktyczny zestaw zależności dla naszego projektu (zależności 
+od których zależą zdefiniowane przez nas zależności). Poeksperymentuj z 
+obydwoma poleceniami i zobacz co generują.</p>
+<h1 id="githhub-actions">GithHub Actions</h1>
+<p>GitHub Actions to usługa, która pozwala na budowanie, testowanie i 
+wdrażanie projektów hostowanych na GitHubie. Zaletą tego rozwiązania 
+jest mnogość rozszerzeń, które obsługują najróżniejsze technologie 
+programistyczne. Dodatkowo usługa ta jest bezpłatna dla publicznych 
+repozytoriów, a dla prywatnych obowiązuje miesięczny limit minut 
+działania usługi.</p>
+<p>W ramach tego modułu stworzymy repozytorium na GitHubie, w którym 
+umieścimy kod naszej aplikacji, a następnie włączymy automatyczne 
+budowanie. Dzięki temu po dowolnej zmianie kodu GitHub Actions na nowo 
+zbuduje naszą aplikację i uruchomi testy.</p>
+<h2 id="zadanie-8.-utworzenie-repozytorium-na-githubie">Zadanie 8. Utworzenie repozytorium na GitHubie</h2>
+<p>W tym ćwiczeniu umieścimy kod aplikacji na GitHubie. Aby było to 
+możliwe musisz posiadać tam konto, które przyda nam się jeszcze w 
+trakcie kilku innych laboratoriów, a także w ramach pracy nad projektem.</p>
+<p>Dalszy opis ćwiczeń będzie bazował na wykorzystaniu interfejsu 
+GitHuba w celu dodania kodu do repozytorium oraz stworzenia nowych 
+plików i wprowadzania w nich drobnych zmian. Jeżeli miałeś do czynienia z
+ Gitem już wcześniej i czujesz się na siłach, możesz wiele z tych 
+operacji wykonać z linii poleceń. Pozostałym osobom polecamy wykonywanie
+ zadań zgodnie z podanym scenariuszem. Na kolejnych laboratoriach 
+przećwiczymy wspólnie na wiele sposobów jak korzystać z Gita z linii 
+poleceń.</p>
+<p>Dodajmy do GitHuba nowe repozytorium:</p>
+<ol type="1" start="2">
+<li>Wybierz opcję <em>New</em> (<a href="https://github.com/new">https://github.com/new</a>)
+<ol type="1">
+<li>nazwa repozytorium: <kbd>bank-zbozowy-mvn</kbd></li>
+<li>widoczność: <strong>public</strong></li>
+<li>README: <strong>tak</strong></li>
+<li>.gitignore: <strong>Java</strong></li>
+</ol></li>
+</ol>
+<p>W tym momencie mamy nowe repozytorium, w którym znajdują się dwa 
+pliki. Musimy teraz dodać pozostałe pliki projektu Bank Zbożowy. W tym 
+celu:</p>
+<ol type="1" start="3">
+<li>Kliknij przycisk <em>Upload files</em></li>
+<li>Przeciągnij plik <em>pom.xml</em> i folder <em>src</em> z folderu aplikacji <em>bank-zbozowy-mvn</em></li>
+<li>Wpisz tytuł komita, np. “Add project files”</li>
+<li>Kliknij przycisk <em>Commit changes</em></li>
+</ol>
+<p>Właśnie udało nam się przenieść wszystkie pliki z projektu Bank Zbożowy do repozytorium Git w usłudze GitHub. Gratulacje!</p>
+<h2 id="zadanie-9.-uruchomienie-usługi-github-actions">Zadanie 9. Uruchomienie usługi GitHub Actions</h2>
+<p>W kolejnym kroku włączymy automatyczne budowanie kodu i uruchamianie 
+testów po każdej zmianie w repozytorium. W tym celu wystarczy dodać plik
+ konfiguracyjny GithHub Actions, który po każdej zmianie w repozytorium 
+uruchomi wskazaną sekwencję komend.</p>
+<ol type="1">
+<li>Utwórz nowy plik klikając <em>Add file -&gt; Create new file</em></li>
+<li>Wprowadź nazwę <code>.github/workflows/ci.yml</code></li>
+<li>Wklej poniższą konfigurację:</li>
+</ol>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Java CI</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v2</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up JDK 11</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-java@v2</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">java-version</span><span class="kw">:</span><span class="at"> </span><span class="st">'11'</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">distribution</span><span class="kw">:</span><span class="at"> </span><span class="st">'adopt'</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">cache</span><span class="kw">:</span><span class="at"> maven</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Validate, build and run tests</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">run</span><span class="kw">:</span><span class="at"> mvn --batch-mode --update-snapshots verify</span></span></code></pre></div>
+<ol type="1" start="4">
+<li>Kliknij przycisk <em>Commit changes</em></li>
+</ol>
+<p>To jest ten moment, kiedy GitHub Actions jest już poprawnie skonfigurowane. Jeżeli przejdziesz do zakładki <em>Actions</em> powinieneś zobaczyć element informujący o tym, że gałąź repozytorium <em>main</em>
+ właśnie się buduje (żółty kolor). Kiedy projekt się zbuduje, a 
+następnie wszystkie testy zakończą się sukcesem, element zmieni kolor na
+ zielony. Jeżeli coś pójdzie nie tak jak oczekujemy, element będzie 
+czerwony.</p>
+<p>Jak to się dzieje, że GitHub Actions wie jak zbudować aplikację, a 
+następnie uruchomić testy? W pliku konfiguracyjnym wskazaliśmy, by 
+skrypt uruchomił polecenie <code>mvn verify</code>, na które składa się walidacja projektu, kompilacja i uruchomienie testów. Na zakończenie zmieńmy plik <em>README.md</em> tak by wyświetlał status ostatniego builda.</p>
+<ol type="1" start="5">
+<li><p>Przejdź do GitHuba i otwórz plik <em>README.md</em></p></li>
+<li><p>Edytuj plik (z poziomu GitHuba) i dodaj fragment, dopasowując poszczególne elementy do Twojego projektu:<br>
+</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>!<span class="co">[</span><span class="ot">example workflow</span><span class="co">]</span>(https://github.com/<span class="kw">&lt;user&gt;</span>/<span class="kw">&lt;repo&gt;</span>/actions/workflows/<span class="kw">&lt;file&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>/badge.svg)</span></code></pre></div></li>
+<li><p>Kliknij przycisk <em>Commit changes</em></p></li>
+</ol>
+<p>Po tej zmianie powinieneś zobaczyć graficzny status ostatniego builda (będzie to zapewne zielony status <em>passing</em>).
+ W tle uruchomi się kolejny build (możesz go zobaczyć w Actions) – w 
+końcu zmieniłeś plik w repozytorium, co uruchomiło proces budowania 
+nowej wersji projektu.</p>
+<h2 id="zadanie-10.-automatyczne-budowanie-po-zmianie-kodu">Zadanie 10. Automatyczne budowanie po zmianie kodu</h2>
+<p>W tym ćwiczeniu postaramy się sprawdzić czy testy uruchomione przez 
+GitHub Actions rzeczywiście wykryją błąd, jeżeli zmienimy kod w taki 
+sposób, by aplikacja przestała działać zgodnie z oczekiwaniami.</p>
+<ol type="1">
+<li>Przejdź do widoku repozytorium w GitHub</li>
+<li>Znajdź plik <em>AtmCardInfo.java</em> (jeżeli wciśniesz klawisz <kbd>t</kbd> otworzy się okienko i będziesz mógł wyszukać plik po nazwie zamiast ‘ręcznie’ przechodzić po drzewie folderów i plików)</li>
+<li>Edytuj plik i zmień numer pin z 1525 na jakiś inny</li>
+<li>Wpisz tytuł komita, np. “Change pin”</li>
+<li>Kliknij przycisk <em>Commit changes</em></li>
+</ol>
+<p>Po potwierdzeniu zmian GitHub Actions rozpocznie proces budowania projektu i uruchomi testy.</p>
+<p>Jak myślisz, co dokładnie spowodowało błąd budowania?</p>
+<p>Spróbuj teraz przywrócić poprawny kod pin i sprawdź jaki będzie wynik operacji budowania.</p>
+<p>Brawo! To już koniec zadań na dziś. <span class="emoji" data-emoji="smile">😄</span></p>
+
+
+</body></html>
